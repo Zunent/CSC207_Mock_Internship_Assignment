@@ -798,7 +798,6 @@ public class FurnitureTable extends JTable implements View, Printable {
       printableColumn.setHeaderRenderer(printableHeaderRenderer);
       printableColumnModel.addColumn(printableColumn);
     }
-    // TODO: Check if the current printableColumnModel contains a Layer column. If not, add one.
     return print(g, pageFormat, pageIndex, printableColumnModel, Color.BLACK);
   }
 
@@ -1222,6 +1221,7 @@ public class FurnitureTable extends JTable implements View, Printable {
       }
     }
 
+    // TODO: Add exception handler to getAvailableColumn
     /**
      * Returns the available column with the provided property.
      */
