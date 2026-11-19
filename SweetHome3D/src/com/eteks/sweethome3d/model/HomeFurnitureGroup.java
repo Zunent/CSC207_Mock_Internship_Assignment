@@ -51,6 +51,7 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
   private float                      fixedWidth;
   private float                      fixedDepth;
   private float                      fixedHeight;
+  private float                      fixedVolume;
   private float                      dropOnTopElevation; 
   private String                     currency;
   // Fields removed in version 5.2
@@ -220,10 +221,12 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
       super.setWidth((float)unrotatedBoundingRectangle.getWidth());
       super.setDepth((float)unrotatedBoundingRectangle.getHeight());
       super.setHeight(height);
+      super.recalculateVolume();
     } else {
       this.fixedWidth = (float)unrotatedBoundingRectangle.getWidth();
       this.fixedDepth = (float)unrotatedBoundingRectangle.getHeight();
       this.fixedHeight = height;
+      this.fixedVolume = this.fixedWidth * this.fixedDepth * this.fixedHeight;
     }
     this.dropOnTopElevation = dropOnTopElevation / height;
     super.setX((float)center.getX());
@@ -442,7 +445,19 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
       return super.getHeight();
     }
   }
-  
+
+  /**
+   * Returns the volume of this group.
+   */
+  @Override
+  public float getVolume() {
+    if (!this.resizable) {
+      return this.fixedVolume;
+    } else {
+      return super.getVolume();
+    }
+  }
+
   /**
    * Returns the elevation at which should be placed an object dropped on this group.
    * @since 4.4 
