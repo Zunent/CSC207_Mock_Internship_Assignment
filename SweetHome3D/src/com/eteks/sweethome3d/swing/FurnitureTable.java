@@ -731,6 +731,26 @@ public class FurnitureTable extends JTable implements View, Printable {
     // with printable renderers for each column
     DefaultTableColumnModel printableColumnModel = new DefaultTableColumnModel();
     TableColumnModel columnModel = getColumnModel();
+
+    // Check if the level column is already enabled in the current column model.
+    // A list of source columns is used to avoid any aliasing issues.
+    List<TableColumn> sourceColumns = Collections.list(columnModel.getColumns());
+
+    boolean levelColumnEnabled = false;
+    for (TableColumn column : sourceColumns) {
+      if (HomePieceOfFurniture.SortableProperty.LEVEL.equals(column.getIdentifier())) {
+        levelColumnEnabled = true;
+        break;
+      }
+    }
+    if (!levelColumnEnabled) {
+      // I don't like the having to use a custom getter here but this is the only way
+      // I could think of to get the level column for use here.
+      TableColumn levelColumn = ((FurnitureTableColumnModel)columnModel)
+              .getAvailableColumn(HomePieceOfFurniture.SortableProperty.LEVEL);
+      sourceColumns.add(levelColumn);
+    }
+
     final DefaultTableCellRenderer defaultRenderer = new DefaultTableCellRenderer();
     defaultRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
     TableCellRenderer printableHeaderRenderer = new TableCellRenderer() {
@@ -750,8 +770,7 @@ public class FurnitureTable extends JTable implements View, Printable {
           return headerRendererLabel;
         }
       };
-    for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
-      final TableColumn tableColumn = columnModel.getColumn(columnIndex);
+    for (final TableColumn tableColumn : sourceColumns) {
       // Create a printable column from existing table column
       TableColumn printableColumn = new TableColumn();
       printableColumn.setIdentifier(tableColumn.getIdentifier());
@@ -778,7 +797,8 @@ public class FurnitureTable extends JTable implements View, Printable {
       // Change printable column header renderer
       printableColumn.setHeaderRenderer(printableHeaderRenderer);
       printableColumnModel.addColumn(printableColumn);
-    }    
+    }
+    // TODO: Check if the current printableColumnModel contains a Layer column. If not, add one.
     return print(g, pageFormat, pageIndex, printableColumnModel, Color.BLACK);
   }
 
@@ -1201,6 +1221,11 @@ public class FurnitureTable extends JTable implements View, Printable {
           throw new IllegalArgumentException("Unknown column name " + property);
       }
     }
+
+    /**
+     * Returns the available column with the provided property.
+     */
+    private TableColumn getAvailableColumn(HomePieceOfFurniture.SortableProperty property) { return this.availableColumns.get(property); }
 
     /**
      * Returns column renderers.
