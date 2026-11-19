@@ -287,7 +287,7 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
     this.width = piece.getWidth();
     this.depth = piece.getDepth();
     this.height = piece.getHeight();
-    this.volume = piece.getVolume();
+    this.volume = this.width * this.depth * this.height;
     this.elevation = piece.getElevation();
     this.dropOnTopElevation = piece.getDropOnTopElevation();
     this.movable = piece.isMovable();
@@ -589,6 +589,11 @@ public class HomePieceOfFurniture extends HomeObject implements PieceOfFurniture
       throw new IllegalStateException("Piece isn't resizable");
     }
   }
+
+  /**
+   * Returns the volume of this piece of furniture.
+   */
+  public float getVolume() { return this.volume; }
 
   /**
    * Returns the elevation of the bottom of this piece of furniture on its level. 
