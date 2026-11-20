@@ -377,15 +377,21 @@ public class HomePrintableComponent extends JComponent implements Printable {
       }
     }
     if (pageExists == NO_SUCH_PAGE 
-        && planView != null 
+        && planView != null
         && (homePrint == null || homePrint.isPlanPrinted())) {
       // Try to print next plan view page
+      Level originalHomeLevel = home.getSelectedLevel();
+      if (furniturePageCount != 0) {
+        Level printLevel = home.getLevels().get(page - 1);
+        home.setSelectedLevel(printLevel);
+      }
       pageExists = ((Printable)planView).print(g2D, pageFormat, page - this.furniturePageCount);
       if (pageExists == PAGE_EXISTS
           && !this.printablePages.contains(page)) {
         this.printablePages.add(page);
         this.planPageCount++;
       }
+      home.setSelectedLevel(originalHomeLevel);
     }
     View view3D = this.controller.getHomeController3D().getView();
     if (pageExists == NO_SUCH_PAGE
@@ -484,9 +490,10 @@ public class HomePrintableComponent extends JComponent implements Printable {
       BufferedImage dummyImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
       Graphics dummyGraphics = dummyImage.getGraphics();
       // Count pages by printing in a dummy image
-      this.pageCount = 0; 
+      this.pageCount = 0;
       try {
-        while (print(dummyGraphics, pageFormat, this.pageCount) == Printable.PAGE_EXISTS) {
+        while ((this.pageCount <= home.getLevels().size())
+          && (print(dummyGraphics, pageFormat, this.pageCount) == Printable.PAGE_EXISTS)) {
           this.pageCount++;
         }
       } catch (PrinterException ex) {
