@@ -1221,7 +1221,6 @@ public class FurnitureTable extends JTable implements View, Printable {
       }
     }
 
-    // TODO: Add exception handler to getAvailableColumn
     /**
      * Returns the available column with the provided property.
      */
